@@ -17,15 +17,18 @@ class VarDecl:
             if DEBUG:
                 print(this.kwparams, end="")
 
-            this.params = [this.kwparams[k] for k in this.kwparams]
-            this.nombre_params = len(this.kwparams)
-            # print("this:", this.nombre_params, kwparams)
+            this.params = [this.kwparams[k] for k in this.kwparams if k != 'return']
+            this.nombre_params = len(this.params)
+            # print(", this:", f"{methode.__name__}()", this.nombre_params, this.kwparams, end="")
 
             def parametres(*args, **kwargs):
                 nb_params = 0
                 nb_params += this.nombre_params
                 if args:
-                    # print("args:", nb_params, "=", args, kwargs)
+                    # if this.is_classe:
+                    #     print(f"\ndef: {methode.__name__}()", this.params, " - args:", this.is_classe, nb_params, "=", args[1:], kwargs)
+                    # else:
+                    #     print(f"\ndef: {methode.__name__}()", this.params, " - args:", this.is_classe, nb_params, "=", args, kwargs)
 
                     # Ne pas prendre le 1er item de la liste si c'est une classe
                     debut = 1 if this.is_classe else 0
@@ -42,6 +45,7 @@ class VarDecl:
                                 # print("    param:", arg, "inconnu")
                                 continue
 
+                        # print("arg:", methode.__name__, i, arg)
                         # print("def_params:", def_params)
                         if def_params.__class__ in [tuple, list]:
                             definition = []
@@ -55,7 +59,7 @@ class VarDecl:
                             definition = [def_params.__name__]
 
                         controle = arg.__class__.__name__
-                        if controle not in definition:
+                        if arg is not None and controle not in definition:
                             if len(definition) == 1:
                                 definition = definition[0]
                             iemestr = "er" if i == 0 else "ème"
@@ -113,9 +117,12 @@ class MethodesDico(abc.MutableMapping):
 
             if DEBUG:        
                 print(")")
-
-        elif DEBUG:        
-            print("")
+        else:
+            self.dico[key] = {}
+            # print("add key:", key, value)
+            self.dico[key]["VALUE"] = value
+            if DEBUG:        
+                print("")
 
     def __delitem__(self, key):
         if DEBUG:
@@ -139,7 +146,7 @@ class tKWARGS(type):
     pass
 
 
-class VarDeclCtrlMeta(type):
+class ExplicitDeclaration(type):
 
     def __init__(self, *args):
         # print(args)
@@ -169,7 +176,26 @@ class VarDeclCtrlMeta(type):
         return super().__call__(*args, **kwargs)
 
 
-# @VarDecl().ctrl()
-# def maFonc(a: int, b: str):
-#     print(a, b)
+@VarDecl().ctrl()
+def maFonc(f1: int, f2: str = "") -> None:
+    return f1, f2
 
+
+class MaClasse(metaclass=ExplicitDeclaration):
+    def __init__(self, a: int, b: int):
+        self.a = a
+        self.b = b
+
+    def update(self, c: int):
+        self.a += c
+        self.b += c
+
+    def setA(self, a: int):
+        self.a = a
+
+    def setB(self, b: int):
+        self.b = b
+
+
+# maFonc(10, )
+# mc = MaClasse(5)

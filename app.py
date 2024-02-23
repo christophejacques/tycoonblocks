@@ -1,24 +1,23 @@
-#! c:/Bat/python.bat -venv
-import sys
-
 import pygame
 
 import init
 from board import Board
 
-print(sys.version_info)
-
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode((1400, 900))
-    board = Board(screen)
+    screen = pygame.display.set_mode((1360, 820), )
+    clock = pygame.time.Clock()
 
+    board = Board(screen)
+    board.load_from_disk()
     running = True
     while running:
         board.update()
         board.draw()
+        clock.tick(60)
         for event in pygame.event.get():
+            
             if event.type == pygame.QUIT:
                 running = False        
 
@@ -64,5 +63,6 @@ def main():
 
             else:
                 print(event)
-
+                
+    board.save_to_disk()
     pygame.quit()
