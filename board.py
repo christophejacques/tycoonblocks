@@ -15,35 +15,35 @@ class Board:
     def __init__(self, screen: pygame.Surface):
         self.screen: pygame.Surface = screen
         self.width, self.height = screen.get_size()
-        self.cols = self.width // self.TILE_SIZE
-        self.rows = self.height // self.TILE_SIZE
+        self.cols: int = self.width // self.TILE_SIZE
+        self.rows: int = self.height // self.TILE_SIZE
         self.mouse = None
         self.font24 = pygame.font.SysFont(None, 24)
 
         print("Taille Board:", self.cols, "x", self.rows)
-        self.points = {}
+        self.points: dict = {}
         self.tuile_under_mouse = None
         self.mouse_button_down_on = None
-        self.rangees = []
+        self.rangees: list = []
         self.add_rangee(Couleur.ROUGE, Coordonnee(5, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(Couleur.ROUGE, 0),), Couleur.VERT)
         bleuc = Couleur.BLEU.clair(1.8)
         bleuc.libelle = "bleu"
-        self.add_rangee(Couleur.VERT, Coordonnee(12, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(Couleur.ROUGE, 1_000),), bleuc)
-        self.add_rangee(bleuc, Coordonnee(19, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(Couleur.VERT, 1_000),), Couleur.BLANC)
-        self.add_rangee(Couleur.BLANC, Coordonnee(26, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(bleuc, 1_000),), Couleur.JAUNE)
+        self.add_rangee(Couleur.VERT,  Coordonnee(12, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(Couleur.ROUGE, 1_000),), bleuc)
+        self.add_rangee(bleuc,         Coordonnee(19, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(Couleur.VERT, 1_000),),  Couleur.BLANC)
+        self.add_rangee(Couleur.BLANC, Coordonnee(26, 17), Coordonnee(0, -1), 6_000_000, (ActiveValue(bleuc, 1_000),),         Couleur.JAUNE)
 
         # -------------------
-        self.add_rangee(Couleur.JAUNE, Coordonnee(5, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.BLANC, 1_000),), Couleur.CYAN)
-        self.add_rangee(Couleur.CYAN, Coordonnee(12, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.JAUNE, 10_000),), Couleur.MAJENTA)
+        self.add_rangee(Couleur.JAUNE, Coordonnee(5, 23),  Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.BLANC, 1_000),),  Couleur.CYAN)
+        self.add_rangee(Couleur.CYAN,  Coordonnee(12, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.JAUNE, 10_000),), Couleur.MAJENTA)
         tech = Couleur.CYAN.fonce(3.0)
         tech.libelle = "tech"
-        self.add_rangee(Couleur.MAJENTA, Coordonnee(19, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.CYAN, 10_000),), tech)
-        self.add_rangee(tech, Coordonnee(26, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.MAJENTA, 10_000),), None)
+        self.add_rangee(Couleur.MAJENTA, Coordonnee(19, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.CYAN, 10_000),),    tech)
+        self.add_rangee(tech,            Coordonnee(26, 23), Coordonnee(0, 1), 6_000_000, (ActiveValue(Couleur.MAJENTA, 10_000),), None)
 
         # -------------------
         self.add_rangee(Couleur.ORANGE, Coordonnee(40, 17), Coordonnee(0, -1), 10_000_000, (ActiveValue(tech, 10_000),), None)
-        self.add_rangee(Couleur.VIOLET, Coordonnee(47, 17), Coordonnee(0, -1), 10_000_000, (ActiveValue(Couleur.ORANGE, 100_000),), None)
-        self.add_rangee(Couleur.MARRON, Coordonnee(54, 17), Coordonnee(0, -1), 10_000_000, (ActiveValue(Couleur.VIOLET, 100_000),), None)
+        self.add_rangee(Couleur.VIOLET, Coordonnee(47, 17), Coordonnee(0, -1), 10_000_000, (ActiveValue(Couleur.ORANGE, 10_000),), None)
+        self.add_rangee(Couleur.MARRON, Coordonnee(54, 17), Coordonnee(0, -1), 10_000_000, (ActiveValue(Couleur.VIOLET, 10_000),), None)
 
         gris = Couleur.BLANC.fonce(4.0)
         gris.libelle = "gris"
@@ -52,24 +52,31 @@ class Board:
         # -------------------
         mech = Couleur.NOIR.clair(4.0)
         mech.libelle = "mech"
-        self.add_rangee(mech, Coordonnee(40, 23), Coordonnee(0, 1), 1_000_000_000, 
-            (ActiveValue(Couleur.ROUGE, 1_000_000_000), ActiveValue(Couleur.VERT, 1_000_000_000), ActiveValue(bleuc, 1_000_000_000),
-                ActiveValue(Couleur.BLANC, 1_000_000_000), ActiveValue(Couleur.JAUNE, 1_000_000_000), ActiveValue(Couleur.CYAN, 1_000_000_000), 
-                ActiveValue(Couleur.MAJENTA, 1_000_000_000), ActiveValue(tech, 1_000_000_000), ActiveValue(Couleur.ORANGE, 1_000_000_000), 
-                ActiveValue(Couleur.VIOLET, 1_000_000_000), ActiveValue(Couleur.MARRON, 1_000_000_000), ActiveValue(gris, 1_000_000_000), ), 
+        self.add_rangee(mech, 
+            Coordonnee(40, 23), 
+            Coordonnee(0, 1), 1_000_000_000, 
+            (
+                ActiveValue(Couleur.ROUGE,   1_000_000_000), ActiveValue(Couleur.VERT,   1_000_000_000), ActiveValue(bleuc,          1_000_000_000),
+                ActiveValue(Couleur.BLANC,   1_000_000_000), ActiveValue(Couleur.JAUNE,  1_000_000_000), ActiveValue(Couleur.CYAN,   1_000_000_000), 
+                ActiveValue(Couleur.MAJENTA, 1_000_000_000), ActiveValue(tech,           1_000_000_000), ActiveValue(Couleur.ORANGE, 1_000_000_000), 
+                ActiveValue(Couleur.VIOLET,  1_000_000_000), ActiveValue(Couleur.MARRON, 1_000_000_000), ActiveValue(gris,           1_000_000_000), 
+            ), 
             None)
 
         self.time = time.perf_counter()
 
     def add_rangee(self, couleur: DefCouleur, position: Coordonnee, direction: Coordonnee, 
-      max_value: int, actives_value: tuple[ActiveValue], destinataire: DefCouleur) -> None:
+      max_value: int, actives_value: tuple[ActiveValue], destinataire: DefCouleur | None) -> None:
         self.points[couleur] = 0
-        self.rangees.append(Rangee(self, couleur, position, direction, self.TILE_SIZE, max_value, actives_value, destinataire))
+        self.rangees.append(
+            Rangee(self, couleur, position, direction, self.TILE_SIZE, max_value, actives_value, destinataire))
 
-    def get_rangee_from_color(self, couleurstr: str) -> Rangee:
+    def get_rangee_from_color(self, couleurstr: str) -> Rangee | None:
         for rangee in self.rangees:
             if rangee.couleur.libelle.upper() == couleurstr.upper():
                 return rangee
+        return None
+
 
     def load_from_disk(self) -> None:
         with open("save.json", "r") as fp:
@@ -81,7 +88,7 @@ class Board:
                     self.points[point] = js["POINTS"][couleur]
                     break
 
-        rangee: Rangee
+        rangee: Rangee | None
         for couleurstr in js["RANGEES"]:
             rangee = self.get_rangee_from_color(couleurstr)
             if not rangee or not js["RANGEES"].get(couleurstr):
@@ -122,7 +129,7 @@ class Board:
             json.dump(js, fp, ensure_ascii=True, indent=4, sort_keys=True)
 
     def update(self) -> None:
-        if time.perf_counter() - self.time > 2:
+        if time.perf_counter() - self.time > 2:  # 0.05
             self.time = time.perf_counter()
             update_points = True
         else:

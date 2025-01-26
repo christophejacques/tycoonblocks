@@ -3,20 +3,18 @@ import math
 import init
 import pygame
 
+from typing import Generator, Self
 from classes import Coordonnee, DefCouleur, Couleur, ActiveValue
-from controleur import VarDecl, ExplicitDeclaration
 
 
 def un_tick_sur_deux() -> int:
     return divmod(divmod(int(3*time()), 10)[1], 2)[1]
 
 
-@VarDecl().ctrl()
 def get_font(size: int) -> pygame.font.Font:
-    return pygame.font.SysFont(None, size)
+    return pygame.font.SysFont("", size)
 
 
-@VarDecl().ctrl()
 def int2str(i: int) -> str:
     s = str(i)
     longueur = len(s)
@@ -41,8 +39,7 @@ def int2str(i: int) -> str:
     return s + unite
 
 
-@VarDecl().ctrl()
-def coefficiant(maximum: int) -> int:
+def coefficiant(maximum: int) -> Generator:
     f = [10, 10]
     a = b = 10
     while b < maximum:
@@ -61,7 +58,19 @@ def coefficiant(maximum: int) -> int:
         yield 0
 
 
-class ShowInfo(metaclass=ExplicitDeclaration):
+class ShowInfo:
+
+    screen: pygame.Surface
+    active: bool
+    enable: bool
+    parent: Self
+
+    texte: list
+    points: dict
+
+    rect: tuple
+    width: int
+    height: int
 
     def show_info(self) -> None:
         if self.enable and self.parent.active:
@@ -128,12 +137,23 @@ class ShowInfo(metaclass=ExplicitDeclaration):
 
 
 class Rangee:
-    pass
+    screen: pygame.Surface
+    parent: Self
+    tuiles: list
+
+    active: bool
+    points: dict
+    value: int
 
 
-class Tuile(metaclass=ExplicitDeclaration):
+class Tuile:
 
-    def __init__(self, parent: Rangee, couleur: DefCouleur, rect: tuple[int], value: int, actives_value: tuple[ActiveValue]):
+    def __init__(self, 
+            parent: Rangee, 
+            couleur: DefCouleur, 
+            rect: tuple[int], 
+            value: int, 
+            actives_value: tuple[ActiveValue]):
         self.parent = parent
         self.screen = parent.screen
         self.couleur = couleur
@@ -205,7 +225,13 @@ class Tuile(metaclass=ExplicitDeclaration):
 
 
 class GrowTuile(Tuile, ShowInfo):
-    def __init__(self, parent: Rangee, couleur: DefCouleur, rect: tuple[int], value: int, actives_value: tuple[ActiveValue]):
+
+    def __init__(self, 
+            parent: Rangee, 
+            couleur: DefCouleur, 
+            rect: tuple[int], 
+            value: int, 
+            actives_value: tuple[ActiveValue]):
         super().__init__(parent, couleur, rect, value, actives_value)
         self.points = (
             (rect[0], rect[1] + rect[3]), 
@@ -251,6 +277,7 @@ class GrowTuile(Tuile, ShowInfo):
 
 
 class TransfertTuile(Tuile, ShowInfo):
+    
     def __init__(self, parent: Rangee, couleur: DefCouleur, rect: tuple[int], value: int, actives_value: tuple[ActiveValue], destinataire: DefCouleur):
         super().__init__(parent, couleur, rect, value, actives_value)
         self.destinataire = destinataire
@@ -312,14 +339,14 @@ class TransfertTuile(Tuile, ShowInfo):
 
 
 class Board:
-    pass
+    screen: pygame.surface.Surface
 
 
 class Mouse:
     pass
 
 
-class Rangee(metaclass=ExplicitDeclaration):
+class Rangee:
     NB_TUILE_ROWS = 14
     NB_TUILES_OPTION = 6
     BORDER_LEN = 2

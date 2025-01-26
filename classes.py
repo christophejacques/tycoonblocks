@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from controleur import ExplicitDeclaration
+# from controleur import ExplicitDeclaration
 
 import init
 
 
-class DefCouleur(metaclass=ExplicitDeclaration):
+class DefCouleur:
     
     def __init__(self, codes: tuple[int, int, int], libelle: str):
         self.libelle = libelle
@@ -12,7 +12,7 @@ class DefCouleur(metaclass=ExplicitDeclaration):
 
     def update(self, clair: bool, coef: float = 2.0) -> tuple[int, int, int]:
         # res: list[int, int, int] = (0, 0, 0)
-        res: list[int] = [0, 0, 0]
+        res: list[int, int, int] = [0, 0, 0]
         for i in range(3):
             if clair:
                 res[i] = (self.codes[i] + (255-self.codes[i]) // coef)
@@ -43,7 +43,7 @@ class DefCouleur(metaclass=ExplicitDeclaration):
         return f"{self.codes} {self.libelle}"
 
 
-class Couleur(metaclass=ExplicitDeclaration):
+class Couleur:
     NOIR = DefCouleur((0, 0, 0), "noir")
     BLANC = DefCouleur((255, 255, 255), "blanc")
 
@@ -68,12 +68,12 @@ class Couleur(metaclass=ExplicitDeclaration):
 
 
 @dataclass
-class Coordonnee(metaclass=ExplicitDeclaration):
+class Coordonnee:
     x: int
     y: int
 
 
 @dataclass
-class ActiveValue(metaclass=ExplicitDeclaration):
-    couleur: Couleur
+class ActiveValue:
+    couleur: DefCouleur
     value: int
